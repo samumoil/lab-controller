@@ -1,13 +1,20 @@
+import { useEffect, useState } from "react";
 import VMCards from "./VMCards";
 
-
 function GetVMs() {
+  const [VMs, setVMs] = useState([]); // Tilamuuttuja VM-datalle
+  const API_URL = import.meta.env.VITE_API_URL;
 
-  // Simuloitu VM-data
-  const VMs = [
-    { id: 1, name: 'Ubuntu-Server-01', status: 'running' },
-    { id: 2, name: 'Windows10-Test', status: 'stopped' },
-  ] 
+  const getData = async () => {
+    const response = await fetch(`${API_URL}/vms`);
+    console.log(response);
+    const data = await response.json();
+    setVMs(data);
+  }
+
+  useEffect(() => {
+    getData();
+  }, []); //
 
 
   return (
