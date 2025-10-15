@@ -1,10 +1,10 @@
 # Node.js (backend)
 backend/node_modules/         # Node.js riippuvuudet
-#backend/.env                  # Ympäristömuuttujat (esim. API-token)
+backend/.env                  # Ympäristömuuttujat (esim. API-token)
 
 # React (frontend)
 frontend/node_modules/        # Reactin riippuvuudet
-#frontend/.env                 # Frontendin ympäristömuuttujat
+frontend/.env                 # Frontendin ympäristömuuttujat
 frontend/dist/                # Vite/React build-kansio
 
 # Yleiset
