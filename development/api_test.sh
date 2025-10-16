@@ -16,11 +16,11 @@ TOKEN="PASTE_THIS_TOKEN_HERE"  # Lisää tähän tokenin arvo
 VMID=1017
 
 # API-kutsu VM:n tilan hakemiseksi
-# curl -s -k -H "Authorization: PVEAPIToken=${USER}!${TOKENID}=${TOKEN}" \
-# "${HOST}/api2/json/nodes/${HOSTNAME}/qemu/${VMID}/status/current"
+curl -s -k -H "Authorization: PVEAPIToken=${USER}!${TOKENID}=${TOKEN}" \
+"${HOST}/api2/json/nodes/${HOSTNAME}/qemu/${VMID}/status/current"
 
 # Kokeillaan käyttäjäoikeuksien rajausta:
 # Lähetä POST-pyyntö VM:n sammuttamiseksi
-curl -s -k -X POST \
-  -H "Authorization: PVEAPIToken=${USER}!${TOKENID}=${TOKEN}" \
-  "${HOST}/api2/json/nodes/${HOSTNAME}/qemu/${VMID}/status/stop"
+#curl -s -k -X POST \
+#  -H "Authorization: PVEAPIToken=${USER}!${TOKENID}=${TOKEN}" \
+#  "${HOST}/api2/json/nodes/${HOSTNAME}/qemu/${VMID}/status/stop"
