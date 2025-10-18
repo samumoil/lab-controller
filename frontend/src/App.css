@@ -8,8 +8,34 @@
 .vm-card {
   min-width: 250px;       /* pienin sallittu leveys */
   flex: 1 1 0;            /* skaalautuu tilan mukaan */
-  height: 100%;           /* täyttää Colin korkeuden */
+  height: 100%;           /* täyttää Col korkeuden */
   display: flex;
   flex-direction: column;
   padding: 1rem;
+}
+
+table td {
+  text-align: left; /* Kohdistaa solujen sisällön vasemmalle */
+}
+
+.card-title {
+  white-space: nowrap;       /* Estää rivinvaihdon */
+  overflow: hidden;          /* Piilottaa ylivuotavan tekstin */
+  text-overflow: ellipsis;   /* Lisää "..." loppuun */
+}
+
+.vm-section-running {
+  background-color: #e6ffe6;       /* vaalean vihreä tausta */
+  padding: 1rem;                   /* sisätila */
+  border-radius: 12px;             /* pyöristetyt kulmat */
+  border: 1px solid #b2d8b2;       /* vihertävä reunaviiva */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* kevyt varjo */
+}
+
+.vm-section-stopped {
+  background-color: #ffe6e6;       /* vaalean punainen tausta */
+  padding: 1rem;
+  border-radius: 12px;
+  border: 1px solid #e0b2b2;       /* punertava reunaviiva */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* kevyt varjo */
 }
