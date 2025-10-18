@@ -3,7 +3,6 @@ import './App.css'
 import GetVMs from './GetVMs'
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
     <>
