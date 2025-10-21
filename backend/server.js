@@ -137,13 +137,10 @@ app.get('/api/node/status', async (req, res) => {
         });
     }
 });
-``
 
-app.post('/api/vm/:id/action', async (req, res) => {
-    const vmId = req.params.id;
-    const { action } = req.body;
-
-    // Vain sallitut komennot
+/////////////////////////////////////////////////////
+// Funktio, joka lähettää komennon Proxmox API:lle. Vain kone nro 1017.
+async function controlVM(vmId, action) {
     const validActions = {
         start: 'start',
         shutdown: 'shutdown',
@@ -151,32 +148,43 @@ app.post('/api/vm/:id/action', async (req, res) => {
     };
 
     if (!validActions[action]) {
-        return res.status(400).json({ message: 'Virheellinen komento' });
+        throw new Error('Virheellinen komento');
     }
 
     const url = `https://${process.env.PROXMOX_IP}:${process.env.PROXMOX_PORT}/api2/json/nodes/${process.env.PROXMOX_NAME}/qemu/${vmId}/status/${validActions[action]}`;
 
+    const { statusCode, body } = await request(url, {
+        method: 'POST',
+        headers: {
+            Authorization: `PVEAPIToken=${process.env.PROXMOX_API_TOKEN_FULL}`
+        },
+        dispatcher: new Agent({
+            connect: { rejectUnauthorized: false }
+        })
+    });
+
+    if (statusCode !== 200) {
+        throw new Error(`Proxmox API returned status ${statusCode}`);
+    }
+
+    const result = await body.json();
+    return result;
+}
+
+// Reitti, joka käsittelee VM:n kontrollikomennot
+app.post('/api/vm/:id/action', async (req, res) => {
+    const vmId = req.params.id;
+    const { action } = req.body;
+
     try {
-        const { statusCode, body } = await request(url, {
-            method: 'POST',
-            headers: {
-                Authorization: `PVEAPIToken=${process.env.PROXMOX_API_TOKEN_FULL}`,
-                'Content-Type': 'application/json'
-            },
-            dispatcher: new Agent({
-                connect: { rejectUnauthorized: false }
-            })
-        });
-
-        if (statusCode !== 200) {
-            throw new Error(`Proxmox API returned status ${statusCode}`);
-        }
-
-        const result = await body.json();
+        const result = await controlVM(vmId, action);
         res.json({ message: 'Komento suoritettu', result });
     } catch (error) {
         console.error('Proxmox-komento error:', error);
-        res.status(500).json({ message: 'Komennon suoritus epäonnistui', details: error.message });
+        res.status(500).json({
+            message: 'Komennon suoritus epäonnistui',
+            details: error.message
+        });
     }
 });
 
