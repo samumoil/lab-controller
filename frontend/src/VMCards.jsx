@@ -3,6 +3,7 @@ import Card from 'react-bootstrap/Card';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Container from 'react-bootstrap/Container';
+import { Link } from 'react-router-dom'; 
 
 function VMCards(props) {
   // Apufunktio: muuntaa sekunnit muotoon "Xd Yh Zm" tai "Xs" jos alle minuutin
@@ -54,11 +55,11 @@ function VMCards(props) {
                   </tr>
                   <tr>
                     <td><strong>CPU</strong></td>
-                    <td>{(vm.cpu * 100).toFixed(1)}% / {vm.cpus} vCPU</td>
+                    <td>{(vm.cpu * 100).toFixed(1)}% /<br/> {vm.cpus} vCPU</td>
                   </tr>
                   <tr>
                     <td><strong>RAM</strong></td>
-                    <td>{(vm.mem / (1024 ** 2)).toFixed(1)} MB / { (vm.maxmem / (1024 ** 2)).toFixed(1)} MB</td>
+                    <td>{(vm.mem / (1024 ** 2)).toFixed(0)} MB / { (vm.maxmem / (1024 ** 2)).toFixed(0)} MB</td>
                   </tr>
                   <tr>
                     <td><strong>Uptime</strong></td>
@@ -67,8 +68,14 @@ function VMCards(props) {
                 </tbody>
               </table>
             </Card.Text>
-
-            <Button variant="primary" className='mt-auto'>Näytä lisätiedot</Button>
+            <Button
+              as={Link} // Käytetään Link-komponenttia napin sisällä
+              to={`/vm/${vm.vmid}`} // Ohjataan VM:n ID:n mukaan
+              variant="primary"
+              className='mt-auto'
+            >
+              Details
+            </Button>
           </Card.Body>
         </Card>
       </Col>

@@ -7,8 +7,10 @@ const cors = require('cors');       // Tuodaan CORS-moduuli, joka sallii fronten
 const app = express();              // Luodaan Express-sovellus
 const PORT = process.env.PORT;      // Määritetään portti, jossa backend kuuntelee
 
-app.use(cors());                    // Otetaan käyttöön CORS, jotta frontend (esim. portissa 5173) voi tehdä pyyntöjä backendille
+app.use(cors({ origin: 'http://localhost:5173' }));
+app.use(express.json()); // Mahdollistaa JSON-bodyjen lukemisen POST-pyynnöistä
 
+/////////////////////////////////////////////////////
 // Hakee VM-tiedot Proxmox API:sta
 async function fetchVMsFromProxmox() {
     const url = `https://${process.env.PROXMOX_IP}:${process.env.PROXMOX_PORT}/api2/json/nodes/${process.env.PROXMOX_NAME}/qemu`;
@@ -28,6 +30,8 @@ async function fetchVMsFromProxmox() {
 
     // Tarkistetaan HTTP-status
     if (statusCode !== 200) {
+        const errorText = await body.text(); // Haetaan virheviesti
+        console.error(`Proxmox API returned status ${statusCode}: ${errorText}`);
         throw new Error(`Proxmox API returned status ${statusCode}`);
     }
 
@@ -48,6 +52,131 @@ app.get('/api/vms', async (req, res) => {
             status: 500,
             details: error.message // esim. "Proxmox API returned status 403"
         });
+    }
+});
+
+/////////////////////////////////////////////////////
+// Hakee yksittäisen VM:n tiedot Proxmox API:sta
+async function fetchVMdetailsFromProxmox(vmId) {
+    const url = `https://${process.env.PROXMOX_IP}:${process.env.PROXMOX_PORT}/api2/json/nodes/${process.env.PROXMOX_NAME}/qemu/${vmId}/status/current`;
+
+    const { statusCode, body } = await request(url, {
+        method: 'GET',
+        headers: {
+            Authorization: `PVEAPIToken=${process.env.PROXMOX_API_TOKEN_FULL}`
+        },
+        dispatcher: new Agent({
+            connect: {
+                rejectUnauthorized: false // SSL-varoituksen ohitus
+            }
+        })
+    });
+
+    if (statusCode !== 200) {
+        throw new Error(`Proxmox API returned status ${statusCode}`);
+    }
+
+    const data = await body.json();
+    return data.data; // Palauttaa yksittäisen VM:n tiedot
+}
+
+// Reitti, joka palauttaa yksittäisen VM:n tiedot frontendille
+app.get('/api/vm/:id', async (req, res) => {
+    try {
+        const vmId = req.params.id; // Haetaan VM:n ID URL-parametrista
+        const VMdetails = await fetchVMdetailsFromProxmox(vmId);
+        res.json(VMdetails); // Palautetaan VM:n tiedot
+    } catch (error) {
+        console.error('Proxmox API error:', error);
+        res.status(500).json({
+            message: 'Virhe Proxmox-yhteydessä',
+            status: 500,
+            details: error.message
+        });
+    }
+});
+
+/////////////////////////////////////////////////////
+// Hakee fyysisen Proxmox-serverin tilan
+async function fetchNodeStatusFromProxmox() {
+    const url = `https://${process.env.PROXMOX_IP}:${process.env.PROXMOX_PORT}/api2/json/nodes/${process.env.PROXMOX_NAME}/status`;
+
+    // Tehdään HTTPS-pyyntö Proxmox API:in
+    const { statusCode, body } = await request(url, {
+        method: 'GET',
+        headers: {
+            Authorization: `PVEAPIToken=${process.env.PROXMOX_API_TOKEN_FULL}`
+        },
+        dispatcher: new Agent({
+            connect: {
+                rejectUnauthorized: false // SSL-varoituksen ohitus
+            }
+        })
+    });
+
+    // Tarkistetaan HTTP-status
+    if (statusCode !== 200) {
+        throw new Error(`Proxmox API returned status ${statusCode}`);
+    }
+
+    const data = await body.json();
+    return data.data; // Palauttaa serverin tilatiedot
+}
+
+// Reitti, joka palauttaa fyysisen serverin tilan frontendille
+app.get('/api/node/status', async (req, res) => {
+    try {
+        const nodeStatus = await fetchNodeStatusFromProxmox();
+        res.json(nodeStatus); // Palautetaan serverin tila
+    } catch (error) {
+        console.error('Proxmox API error:', error);
+        res.status(500).json({
+            message: 'Virhe Proxmox-yhteydessä',
+            status: 500,
+            details: error.message
+        });
+    }
+});
+``
+
+app.post('/api/vm/:id/action', async (req, res) => {
+    const vmId = req.params.id;
+    const { action } = req.body;
+
+    // Vain sallitut komennot
+    const validActions = {
+        start: 'start',
+        shutdown: 'shutdown',
+        reboot: 'reboot'
+    };
+
+    if (!validActions[action]) {
+        return res.status(400).json({ message: 'Virheellinen komento' });
+    }
+
+    const url = `https://${process.env.PROXMOX_IP}:${process.env.PROXMOX_PORT}/api2/json/nodes/${process.env.PROXMOX_NAME}/qemu/${vmId}/status/${validActions[action]}`;
+
+    try {
+        const { statusCode, body } = await request(url, {
+            method: 'POST',
+            headers: {
+                Authorization: `PVEAPIToken=${process.env.PROXMOX_API_TOKEN_FULL}`,
+                'Content-Type': 'application/json'
+            },
+            dispatcher: new Agent({
+                connect: { rejectUnauthorized: false }
+            })
+        });
+
+        if (statusCode !== 200) {
+            throw new Error(`Proxmox API returned status ${statusCode}`);
+        }
+
+        const result = await body.json();
+        res.json({ message: 'Komento suoritettu', result });
+    } catch (error) {
+        console.error('Proxmox-komento error:', error);
+        res.status(500).json({ message: 'Komennon suoritus epäonnistui', details: error.message });
     }
 });
 

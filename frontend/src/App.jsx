@@ -1,14 +1,24 @@
 import { useState } from 'react'
 import './App.css'
 import GetVMs from './GetVMs'
+import GetVMdetails from './GetVMdetails'
+import GetNodeDetails from './GetNodeDetails'
+import Navbar from './Navbar'
 
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 
 function App() {
-
   return (
-      <GetVMs />
-  )
+    <BrowserRouter>
+      <Navbar/>
+      <Routes>
+        <Route path="/" element={<GetVMs />} />
+        <Route path="/vm/:id" element={<GetVMdetails />} />
+        <Route path="/node" element={<GetNodeDetails />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
