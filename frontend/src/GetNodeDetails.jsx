@@ -4,7 +4,7 @@ import NodeDetails from "./NodeDetails.jsx"; // Tuodaan esityskomponentti
 
 function GetNodeDetails() {
     const [nodeStatus, setNodeStatus] = useState();
-    const API_URL = import.meta.env.VITE_API_URL;
+    const API_URL = import.meta.env.VITE_API_URL; // Tuodaan docker-compose tarjoama env
 
   useEffect(() => {
     const getData = async () => {

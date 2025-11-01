@@ -1,52 +1,25 @@
 services:
-
-  tailscale:
-    image: tailscale/tailscale
-    hostname: lab-controller
-    environment:
-      - TS_STATE_DIR=/var/lib/tailscale
-      - TS_ACCEPT_DNS=true
-      - TS_HOSTNAME=lab-controller
-    env_file:
-      - ./tailscale.env
-    volumes:
-      - tailscale-state:/var/lib/tailscale
-      - /dev/net/tun:/dev/net/tun
-    cap_add:
-      - NET_ADMIN
-      - SYS_MODULE
+  backend:
+    build: ./backend
     restart: unless-stopped
+    env_file: ./backend/.env
+    expose:
+      - "8001"
     networks:
       - lab-net
-
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    network_mode: service:tailscale
-    env_file:
-      - ./backend/.env
-    depends_on:
-      - tailscale
-#    volumes:
-#      - ./backend:/app # Mount the backend code for live changes (optional, remove for production build)
-#      - /app/node_modules # Exclude node_modules from the bind mount
 
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: /api # frontend code needs this env-variable
+    restart: unless-stopped
     ports:
       - "80:80"
-    env_file:
-      - ./frontend/.env
     depends_on:
       - backend
     networks:
       - lab-net
-
-volumes:
-  tailscale-state:
 
 networks:
   lab-net:

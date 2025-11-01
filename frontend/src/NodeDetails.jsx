@@ -19,9 +19,7 @@ function NodeDetails({ data }) {
               <tr><td><strong>Swap</strong></td><td>{(data.swap.used / 1024 ** 2).toFixed(1)} MB / {(data.swap.total / 1024 ** 2).toFixed(1)} MB</td></tr>
               <tr><td><strong>RootFS</strong></td><td>{(data.rootfs.used / 1024 ** 3).toFixed(1)} GB / {(data.rootfs.total / 1024 ** 3).toFixed(1)} GB</td></tr>
               <tr><td><strong>Uptime</strong></td><td>{formatUptime(data.uptime)}</td></tr>
-              <tr><td><strong>Kernel</strong></td><td>{data["current-kernel"].release}</td></tr>
               <tr><td><strong>CPU Model</strong></td><td>{data.cpuinfo.model}</td></tr>
-              <tr><td><strong>PVE Version</strong></td><td>{data.pveversion}</td></tr>
             </tbody>
           </Table>
         </Card.Body>

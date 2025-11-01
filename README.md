@@ -1,25 +1,22 @@
 # Lab Controller
 
-A web dashboard for monitoring and managing a Proxmox homelab environment. 
+A web dashboard for monitoring and managing a Proxmox homelab environment. The project's development was heavily assisted by AI tools, and a detailed reflection on this process can be found in the [Thoughts on AI](#thoughts-on-ai-written-by-author) section.
 
 This application provides a web-based interface to display live information about virtual machines, containers, and nodes from a Proxmox server. It is designed to be portable and securely accessible from anywhere using Tailscale.
-
-The project's development was heavily assisted by AI tools, and a detailed reflection on this process can be found in the [Thoughts on AI](#thoughts-on-ai-written-by-author) section.
 
 ## Features
 
 - View the status and details of all virtual machines and containers.
 - Get live resource usage from Proxmox nodes.
-- Secure, portable deployment using Docker and Tailscale.
+- Secure, portable deployment using Docker.
 - React-based frontend with a Node.js backend API.
 
 ## Architecture
 
-The application runs in Docker and is orchestrated with Docker Compose.
+The application runs in Docker and is orchestrated with Docker Compose. The networking relies on the **host machine** being connected to a Tailscale network.
 
--   **Frontend**: A React application built with Vite and served by Nginx. It is accessible on the host's network.
--   **Backend**: A Node.js Express server that provides an API to fetch data from Proxmox.
--   **Networking**: The backend service runs with a Tailscale sidecar. This allows it to connect to a Proxmox server on the same Tailnet from any location, without exposing the backend or the Proxmox server to the public internet.
+-   **Host Machine**: Must be running Tailscale. It provides the secure network tunnel for the backend container to reach the Proxmox server.
+-   **Frontend & Backend Containers**: The `frontend` and `backend` services run on a private, shared Docker network. The backend sends its API calls to the Proxmox server out through the host's Tailscale connection.
 
 ## Getting Started
 
@@ -28,37 +25,32 @@ The application runs in Docker and is orchestrated with Docker Compose.
 -   `git`
 -   `docker` and `docker-compose`
 -   A [Tailscale](https://tailscale.com/) account.
+-   A host machine that is connected to your Tailnet.
 
 ### Deployment Steps
 
-1.  **Clone the Repository**
+1.  **Prepare the Host**
+    Ensure your host machine is running and connected to your Tailnet via `tailscale up`.
+
+2.  **Clone the Repository**
     ```bash
     git clone <your-github-repo-url>
     cd lab-controller
     ```
 
-2.  **Create Environment Files**
+3.  **Create Environment Files**
 
-    These files contain secrets and local configuration, and are not stored in Git. Copy the provided `.template` files to create your local `.env` configurations.
+    Copy the provided `.template` file to create your local `.env` configurations.
 
-    -   **Root directory:**
-        ```bash
-        cp tailscale.env.template tailscale.env
-        ```
-    -   **Frontend directory:**
-        ```bash
-        cp frontend/.env.template frontend/.env
-        ```
-    -   **Backend directory:**
         ```bash
         cp backend/.env.template backend/.env
         ```
     
-    After copying, edit the new `.env` files to add your secrets (like the Tailscale auth key) and specific configuration.
+    After copying, edit `backend/.env` to add your Proxmox credentials.
 
     > **Important**: Your Proxmox server must also be on your Tailnet. Use its Tailscale IP or MagicDNS name for the `PROXMOX_HOST` variable in `backend/.env`.
 
-3.  **Launch the Application**
+4.  **Launch the Application**
 
     Use Docker Compose to build the images and start all services in the background.
     ```bash
@@ -67,8 +59,7 @@ The application runs in Docker and is orchestrated with Docker Compose.
 
 ## Accessing the Application
 
--   **Web Interface**: Navigate to the IP address of the machine hosting Docker (e.g., `http://<docker-host-lan-ip>`). If the host is on your Tailnet, you can also use its Tailscale IP.
--   **Tailscale**: After launching, a new machine named `lab-controller` will appear in your Tailscale admin console.
+-   **Web Interface**: Navigate to the IP address of the machine hosting Docker (e.g., `http://<docker-host-lan-ip>`).
 
 ## AI-Assisted Development (written by AI)
 

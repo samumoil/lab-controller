@@ -3,7 +3,7 @@ import VMCards from "./VMCards";
 
 function GetVMs() {
   const [VMs, setVMs] = useState([]); // Tilamuuttuja VM-datalle
-  const API_URL = import.meta.env.VITE_API_URL; // Haetaan API-muuttuja .env tiedostosta
+  const API_URL = import.meta.env.VITE_API_URL; // Tuodaan docker-compose tarjoama env
 
   const getData = async () => {
     const response = await fetch(`${API_URL}/vms`); // 

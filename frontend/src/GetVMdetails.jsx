@@ -5,7 +5,7 @@ import VMDetails from "./VMDetails"; // Tuodaan yksittäisen VM:n tietojen kompo
 function GetVMdetails() {
   const [VMdetails, setVMdetails] = useState(null); // Tilamuuttuja yksittäiselle VM:lle
   const { id } = useParams(); // Haetaan ID reitistä
-  const API_URL = import.meta.env.VITE_API_URL; // API-osoite .env-tiedostosta
+  const API_URL = import.meta.env.VITE_API_URL; // Tuodaan docker-compose tarjoama env
 
   // Hakee yksittäisen VM:n tiedot backendistä
   const getData = async () => {
