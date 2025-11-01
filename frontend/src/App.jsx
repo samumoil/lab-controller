@@ -12,11 +12,13 @@ function App() {
   return (
     <BrowserRouter>
       <Navbar/>
-      <Routes>
-        <Route path="/" element={<GetVMs />} />
-        <Route path="/vm/:id" element={<GetVMdetails />} />
-        <Route path="/node" element={<GetNodeDetails />} />
-      </Routes>
+      <div className="content-container">
+        <Routes>
+          <Route path="/" element={<GetVMs />} />
+          <Route path="/vm/:id" element={<GetVMdetails />} />
+          <Route path="/node" element={<GetNodeDetails />} />
+        </Routes>
+      </div>
     </BrowserRouter>
   );
 }

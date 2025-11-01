@@ -16,6 +16,8 @@ services:
       - NET_ADMIN
       - SYS_MODULE
     restart: unless-stopped
+    networks:
+      - lab-net
 
   backend:
     build:
@@ -40,6 +42,11 @@ services:
       - ./frontend/.env
     depends_on:
       - backend
+    networks:
+      - lab-net
 
 volumes:
   tailscale-state:
+
+networks:
+  lab-net:

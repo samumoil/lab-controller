@@ -1,8 +1,10 @@
 # Lab Controller
 
-A web dashboard for monitoring and managing a Proxmox homelab environment.
+A web dashboard for monitoring and managing a Proxmox homelab environment. 
 
 This application provides a web-based interface to display live information about virtual machines, containers, and nodes from a Proxmox server. It is designed to be portable and securely accessible from anywhere using Tailscale.
+
+The project's development was heavily assisted by AI tools, and a detailed reflection on this process can be found in the [Thoughts on AI](#thoughts-on-ai-written-by-author) section.
 
 ## Features
 
@@ -37,12 +39,24 @@ The application runs in Docker and is orchestrated with Docker Compose.
 
 2.  **Create Environment Files**
 
-    These files contain secrets and local configuration, and are not stored in Git. Template files can be found for all env-files.
+    These files contain secrets and local configuration, and are not stored in Git. Copy the provided `.template` files to create your local `.env` configurations.
 
-    -   `tailscale.env`
-    -   `frontend/.env`
-    -   `backend/.env`
-    > **Important**: Your Proxmox server must also be on your Tailnet. Use its Tailscale IP or MagicDNS name for the `PROXMOX_HOST` variable.
+    -   **Root directory:**
+        ```bash
+        cp tailscale.env.template tailscale.env
+        ```
+    -   **Frontend directory:**
+        ```bash
+        cp frontend/.env.template frontend/.env
+        ```
+    -   **Backend directory:**
+        ```bash
+        cp backend/.env.template backend/.env
+        ```
+    
+    After copying, edit the new `.env` files to add your secrets (like the Tailscale auth key) and specific configuration.
+
+    > **Important**: Your Proxmox server must also be on your Tailnet. Use its Tailscale IP or MagicDNS name for the `PROXMOX_HOST` variable in `backend/.env`.
 
 3.  **Launch the Application**
 
@@ -85,9 +99,4 @@ I believe AI could and should be used for:
 
 ### Conclusion (written by AI)
 
-In conclusion, this project demonstrated AI's immense power to accelerate
-development, but also solidified my view that it is a double-edged
-sword. To truly learn and grow as a developer, I must continue to use it
-as a specialized tool rather than as a substitute for my own critical
-thinking and effort.
-
+In conclusion, this project demonstrated AI's immense power to accelerate development, but also solidified my view that it is a double-edged sword. To truly learn and grow as a developer, I must continue to use it as a specialized tool rather than as a substitute for my own critical thinking and effort.
