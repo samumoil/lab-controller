@@ -7,7 +7,7 @@ const cors = require('cors');       // Tuodaan CORS-moduuli, joka sallii fronten
 const app = express();              // Luodaan Express-sovellus
 const PORT = process.env.PORT;      // Määritetään portti, jossa backend kuuntelee
 
-app.use(cors({ origin: 'http://localhost:5173' }));
+//app.use(cors({ origin: 'http://localhost:5173' }));
 app.use(express.json()); // Mahdollistaa JSON-bodyjen lukemisen POST-pyynnöistä
 
 /////////////////////////////////////////////////////
